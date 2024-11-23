@@ -5,6 +5,7 @@ import {
   Tstudent,
   TuserName,
 } from './student.interface';
+import validator from 'validator';
 
 // 2. Create a Schema corresponding to the document interface.
 
@@ -36,6 +37,12 @@ const userNameSchema = new Schema<TuserName>({
     required: [true, 'Last Name is required.'],
     trim: true,
     maxLength: [20, 'Last Name can not be more than 20 characters'],
+    validate: {
+      validator: (value: string) => {
+        return validator.isAlpha(value);
+      },
+      message: '{VALUE} is not valid Name',
+    },
   },
 });
 
@@ -121,6 +128,10 @@ const studentSchema = new Schema<Tstudent>({
     required: [true, 'Email Address is required.'],
     unique: true,
     trim: true,
+    validate: {
+      validator: (value: string) => validator.isEmail(value),
+      message: '{VALUE} is not a valid email type',
+    },
   },
   contactNo: {
     type: String,

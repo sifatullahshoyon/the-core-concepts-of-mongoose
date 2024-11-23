@@ -11,14 +11,14 @@ import {
 const userNameSchema = new Schema<TuserName>({
   firstName: {
     type: String,
-    required: true,
+    required: [true, 'First Name is required'],
   },
   middleName: {
     type: String,
   },
   lastName: {
     type: String,
-    required: true,
+    required: [true, 'First Name is required'],
   },
 });
 
@@ -70,18 +70,25 @@ const localGuardianSchema = new Schema<TlocalGuardian>({
 
 const studentSchema = new Schema<Tstudent>({
   // interface এর ক্ষেত্রে type গুলো থাকে small letter আর mongoose এর ক্ষেত্রে type গুলো থাকে Capitalize
-  id: { type: String },
-  name: userNameSchema,
+  id: { type: String, required: true, unique: true },
+  name: {
+    type: userNameSchema,
+    required: true,
+  },
   // typescript এ যেইটা union type mongoose এ সেইটা enum type
   gender: {
     type: String,
-    enum: ['male', 'female', 'other'],
+    enum: {
+      values: ['male', 'female', 'other'],
+      message: '{VALUE} is not a valid gender', // mongoose এ {VALUE} লিখলে সে ঐ property এর value গুলোকে দিয়ে দেয়।
+    },
     required: true,
   },
   dateOfBirth: { type: String },
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   contactNo: { type: String, required: true },
   emergencyContactNo: { type: String, required: true },
@@ -91,8 +98,14 @@ const studentSchema = new Schema<Tstudent>({
   },
   presentAddress: { type: String, required: true },
   permanentAddress: { type: String, required: true },
-  guardian: guardianSchema,
-  localGuardian: localGuardianSchema,
+  guardian: {
+    type: guardianSchema,
+    required: true,
+  },
+  localGuardian: {
+    type: localGuardianSchema,
+    required: true,
+  },
   profileImg: { type: String },
   isActive: {
     type: String,

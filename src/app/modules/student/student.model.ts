@@ -73,7 +73,11 @@ const studentSchema = new Schema<Tstudent>({
   id: { type: String },
   name: userNameSchema,
   // typescript এ যেইটা union type mongoose এ সেইটা enum type
-  gender: ['male', 'female'],
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other'],
+    required: true,
+  },
   dateOfBirth: { type: String },
   email: {
     type: String,
@@ -81,13 +85,20 @@ const studentSchema = new Schema<Tstudent>({
   },
   contactNo: { type: String, required: true },
   emergencyContactNo: { type: String, required: true },
-  BloodGroup: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+  BloodGroup: {
+    type: String,
+    enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+  },
   presentAddress: { type: String, required: true },
   permanentAddress: { type: String, required: true },
   guardian: guardianSchema,
   localGuardian: localGuardianSchema,
   profileImg: { type: String },
-  isActive: ['active', 'block'],
+  isActive: {
+    type: String,
+    enum: ['active', 'block'],
+    default: 'active',
+  },
 });
 
 // 3. Create a Model

@@ -1,4 +1,4 @@
-import { Schema, model, connect } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import {
   Tguardian,
   TlocalGuardian,
@@ -91,5 +91,5 @@ const studentSchema = new Schema<Tstudent>({
 });
 
 // 3. Create a Model
-// variables এর নাম আর model এর নাম সেম রাখতে হয়।
-const Student = model<Tstudent>('Student', studentSchema);
+// variables এর নাম আর model এর নাম সেম রাখতে পারলে ভালো।
+export const StudentModel = model<Tstudent>('Student', studentSchema);

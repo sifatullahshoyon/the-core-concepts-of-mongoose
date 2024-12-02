@@ -1,23 +1,28 @@
 import { Request, Response } from 'express';
 import { studentServices } from './student.service';
 import studentValidationSchema from './Student.validation';
+// import studentValidationSchema from './Student.validation';
 
 const createStudent = async (req: Request, res: Response) => {
   try {
     const { student: studentData } = req.body;
 
-    const { error } = studentValidationSchema.validate(studentData);
+    // data validation using joi
+    // const { error, value } = studentValidationSchema.validate(studentData);
+
+    // data validation using zod
+    const zodParseData = studentValidationSchema.parse(studentData);
 
     // will cal service func to send this data
-    const result = await studentServices.createStudentIntoDB(studentData);
+    const result = await studentServices.createStudentIntoDB(zodParseData);
 
-    if (error) {
-      res.status(500).json({
-        success: false,
-        message: 'somthing went wrong',
-        error,
-      });
-    }
+    // if (error) {
+    //   res.status(500).json({
+    //     success: false,
+    //     message: 'somthing went wrong',
+    //     error,
+    //   });
+    // }
 
     // send response
     res.status(200).json({

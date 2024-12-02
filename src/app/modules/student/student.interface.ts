@@ -13,7 +13,7 @@ export type Tguardian = {
 
 export type TuserName = {
   firstName: string;
-  middleName: string;
+  middleName?: string;
   lastName: string;
 };
 
@@ -27,7 +27,7 @@ export type TlocalGuardian = {
 export type Tstudent = {
   id: string;
   name: TuserName;
-  gender: 'male' | 'female'; // union type literal
+  gender: 'male' | 'female' | 'other'; // union type literal
   dateOfBirth?: string;
   email: string;
   contactNo: string;

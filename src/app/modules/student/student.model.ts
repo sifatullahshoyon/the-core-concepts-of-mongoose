@@ -104,92 +104,100 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<TStudent, StudentModel>({
-  // interface এর ক্ষেত্রে type গুলো থাকে small letter আর mongoose এর ক্ষেত্রে type গুলো থাকে Capitalize
-  id: {
-    type: String,
-    required: [true, 'Student ID is required.'],
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: [true, 'password is required.'],
-    maxlength: [20, 'Password can not be more than 20 characters.'],
-  },
-  name: {
-    type: userNameSchema,
-    required: [true, 'Student Name is required.'],
-  },
+const studentSchema = new Schema<TStudent, StudentModel>(
+  {
+    // interface এর ক্ষেত্রে type গুলো থাকে small letter আর mongoose এর ক্ষেত্রে type গুলো থাকে Capitalize
+    id: {
+      type: String,
+      required: [true, 'Student ID is required.'],
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: [true, 'password is required.'],
+      maxlength: [20, 'Password can not be more than 20 characters.'],
+    },
+    name: {
+      type: userNameSchema,
+      required: [true, 'Student Name is required.'],
+    },
 
-  // typescript এ যেইটা union type mongoose এ সেইটা enum type
-  gender: {
-    type: String,
-    enum: {
-      values: ['male', 'female', 'other'],
-      message:
-        '{VALUE} is not a valid gender. Allowed values: male, female, other.', // mongoose এ {VALUE} লিখলে সে ঐ property এর value গুলোকে দিয়ে দেয়।
+    // typescript এ যেইটা union type mongoose এ সেইটা enum type
+    gender: {
+      type: String,
+      enum: {
+        values: ['male', 'female', 'other'],
+        message:
+          '{VALUE} is not a valid gender. Allowed values: male, female, other.', // mongoose এ {VALUE} লিখলে সে ঐ property এর value গুলোকে দিয়ে দেয়।
+      },
+      required: [true, 'Gender is required.'],
     },
-    required: [true, 'Gender is required.'],
-  },
-  dateOfBirth: { type: String },
-  email: {
-    type: String,
-    required: [true, 'Email Address is required.'],
-    unique: true,
-    trim: true,
-    // validate: {
-    //   validator: (value: string) => validator.isEmail(value),
-    //   message: '{VALUE} is not a valid email type',
-    // },
-  },
-  contactNo: {
-    type: String,
-    required: [true, 'Contact Number is required.'],
-  },
-  emergencyContactNo: {
-    type: String,
-    required: [true, 'Emergency Contact Number is required.'],
-  },
-  BloodGroup: {
-    type: String,
-    enum: {
-      values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-      message:
-        '{VALUE} is not a valid blood group. Allowed values: A+, A-, B+, B-, AB+, AB-, O+, O-.',
+    dateOfBirth: { type: String },
+    email: {
+      type: String,
+      required: [true, 'Email Address is required.'],
+      unique: true,
+      trim: true,
+      // validate: {
+      //   validator: (value: string) => validator.isEmail(value),
+      //   message: '{VALUE} is not a valid email type',
+      // },
+    },
+    contactNo: {
+      type: String,
+      required: [true, 'Contact Number is required.'],
+    },
+    emergencyContactNo: {
+      type: String,
+      required: [true, 'Emergency Contact Number is required.'],
+    },
+    BloodGroup: {
+      type: String,
+      enum: {
+        values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+        message:
+          '{VALUE} is not a valid blood group. Allowed values: A+, A-, B+, B-, AB+, AB-, O+, O-.',
+      },
+    },
+    presentAddress: {
+      type: String,
+      required: [true, 'Present Address is required.'],
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, 'Permanent Address is required.'],
+    },
+    guardian: {
+      type: guardianSchema,
+      required: [true, 'Guardian information is required.'],
+    },
+    localGuardian: {
+      type: localGuardianSchema,
+      required: [true, 'Local Guardian information is required.'],
+    },
+    profileImg: {
+      type: String,
+    },
+    isActive: {
+      type: String,
+      enum: {
+        values: ['active', 'block'],
+        message:
+          '{VALUE} is not a valid status. Allowed values: active, block.',
+      },
+      default: 'active',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
-  presentAddress: {
-    type: String,
-    required: [true, 'Present Address is required.'],
-  },
-  permanentAddress: {
-    type: String,
-    required: [true, 'Permanent Address is required.'],
-  },
-  guardian: {
-    type: guardianSchema,
-    required: [true, 'Guardian information is required.'],
-  },
-  localGuardian: {
-    type: localGuardianSchema,
-    required: [true, 'Local Guardian information is required.'],
-  },
-  profileImg: {
-    type: String,
-  },
-  isActive: {
-    type: String,
-    enum: {
-      values: ['active', 'block'],
-      message: '{VALUE} is not a valid status. Allowed values: active, block.',
+  {
+    toJSON: {
+      virtuals: true,
     },
-    default: 'active',
   },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+);
 
 // pre save middleware / hook
 studentSchema.pre('save', async function (next) {
@@ -204,6 +212,12 @@ studentSchema.pre('save', async function (next) {
     Number(config.bcrypt_salt_rounds),
   );
   next();
+});
+
+// virtual
+
+studentSchema.virtual('fullName').get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
 // post save middleware / hook : will work on create() save()

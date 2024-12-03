@@ -1,15 +1,16 @@
 import { Schema, model } from 'mongoose';
 import {
-  Tguardian,
-  TlocalGuardian,
-  Tstudent,
-  TuserName,
+  StudentModel,
+  TGuardian,
+  TLocalGuardian,
+  TStudent,
+  TUserName,
 } from './student.interface';
 // import validator from 'validator';
 
 // 2. Create a Schema corresponding to the document interface.
 
-const userNameSchema = new Schema<TuserName>({
+const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
     required: [true, 'First Name is required.'],
@@ -46,7 +47,7 @@ const userNameSchema = new Schema<TuserName>({
   },
 });
 
-const guardianSchema = new Schema<Tguardian>({
+const guardianSchema = new Schema<TGuardian>({
   fatherName: {
     type: String,
     required: [true, "Father's Name is required."],
@@ -77,7 +78,7 @@ const guardianSchema = new Schema<Tguardian>({
   },
 });
 
-const localGuardianSchema = new Schema<TlocalGuardian>({
+const localGuardianSchema = new Schema<TLocalGuardian>({
   name: {
     type: String,
     required: [true, "Local Guardian's Name is required."],
@@ -100,7 +101,7 @@ const localGuardianSchema = new Schema<TlocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<Tstudent>({
+const studentSchema = new Schema<TStudent, StudentModel>({
   // interface এর ক্ষেত্রে type গুলো থাকে small letter আর mongoose এর ক্ষেত্রে type গুলো থাকে Capitalize
   id: {
     type: String,
@@ -178,6 +179,18 @@ const studentSchema = new Schema<Tstudent>({
   },
 });
 
+// creating a custom static method
+studentSchema.statics.isUserExists = async function (id: string) {
+  const existingUser = await Student.findOne({ id });
+  return existingUser;
+};
+
+// creating a custom instance method
+// studentSchema.methods.isUserExist = async function (id: string) {
+//   const existingUser = await Student.findOne({ id });
+//   return existingUser;
+// };
+
 // 3. Create a Model
 // variables এর নাম আর model এর নাম সেম রাখতে পারলে ভালো।
-export const StudentModel = model<Tstudent>('Student', studentSchema);
+export const Student = model<TStudent, StudentModel>('Student', studentSchema);

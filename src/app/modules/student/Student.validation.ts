@@ -90,6 +90,7 @@ const studentValidationSchema = z.object({
       invalid_type_error: "Status must be 'active' or 'block'.",
     })
     .default('active'),
+  isDeleted: z.boolean(),
 });
 
 // Export for use

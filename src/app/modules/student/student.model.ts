@@ -8,6 +8,7 @@ import {
 } from './student.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
+
 // import validator from 'validator';
 
 // 2. Create a Schema corresponding to the document interface.
@@ -113,7 +114,6 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   password: {
     type: String,
     required: [true, 'password is required.'],
-    unique: true,
     maxlength: [20, 'Password can not be more than 20 characters.'],
   },
   name: {
@@ -185,6 +185,10 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     },
     default: 'active',
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // pre save middleware / hook
@@ -203,8 +207,29 @@ studentSchema.pre('save', async function (next) {
 });
 
 // post save middleware / hook : will work on create() save()
-studentSchema.post('save', function () {
-  console.log(this, 'post hook: we will saved our data');
+studentSchema.post('save', function (doc, next) {
+  doc.password = '';
+  // console.log(this, 'post hook: we will saved our data');
+  next();
+});
+
+// Query Middleware
+studentSchema.pre('find', function (next) {
+  // console.log(this);
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('findOne', function (next) {
+  // console.log(this);
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('aggregate', function (next) {
+  // console.log(this.pipeline);
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
 });
 
 // creating a custom static method

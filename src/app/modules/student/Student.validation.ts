@@ -56,6 +56,7 @@ const localGuardianValidationSchema = z.object({
 
 const studentValidationSchema = z.object({
   id: z.string().nonempty('Student ID is required.'),
+  password: z.string().max(20),
   name: userNameValidationSchema,
   gender: z.enum(['male', 'female', 'other'], {
     invalid_type_error: "Gender must be 'male', 'female', or 'other'.",

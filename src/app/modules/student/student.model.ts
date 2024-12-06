@@ -6,10 +6,6 @@ import {
   TStudent,
   TUserName,
 } from './student.interface';
-import bcrypt from 'bcrypt';
-import config from '../../config';
-
-// import validator from 'validator';
 
 // 2. Create a Schema corresponding to the document interface.
 
@@ -19,18 +15,6 @@ const userNameSchema = new Schema<TUserName>({
     required: [true, 'First Name is required.'],
     trim: true, // remove whitespace after & before words
     maxLength: [20, 'First Name can not be more than 20 characters'],
-    // custom validators
-    // validate: {
-    //   validator: function (value: string): boolean {
-    //     // console.log(value);
-    //     const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1);
-    //     if (value !== firstNameStr) {
-    //       return false;
-    //     }
-    //     return true;
-    //   },
-    //   message: '{VALUE} is not in capitalize format',
-    // },
   },
   middleName: {
     type: String,
@@ -41,12 +25,6 @@ const userNameSchema = new Schema<TUserName>({
     required: [true, 'Last Name is required.'],
     trim: true,
     maxLength: [20, 'Last Name can not be more than 20 characters'],
-    // validate: {
-    //   validator: (value: string) => {
-    //     return validator.isAlpha(value);
-    //   },
-    //   message: '{VALUE} is not valid Name',
-    // },
   },
 });
 
@@ -112,10 +90,11 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'Student ID is required.'],
       unique: true,
     },
-    password: {
-      type: String,
-      required: [true, 'password is required.'],
-      maxlength: [20, 'Password can not be more than 20 characters.'],
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'Student ID is required.'],
+      unique: true,
+      ref: 'User',
     },
     name: {
       type: userNameSchema,
@@ -178,15 +157,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     profileImg: {
       type: String,
     },
-    isActive: {
-      type: String,
-      enum: {
-        values: ['active', 'block'],
-        message:
-          '{VALUE} is not a valid status. Allowed values: active, block.',
-      },
-      default: 'active',
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -199,32 +169,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
   },
 );
 
-// pre save middleware / hook
-studentSchema.pre('save', async function (next) {
-  // console.log(this, 'pre hook: we will save data');
-
-  // hashing password and save into DB
-
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this; // doc
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds),
-  );
-  next();
-});
-
 // virtual
 
 studentSchema.virtual('fullName').get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
-});
-
-// post save middleware / hook : will work on create() save()
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  // console.log(this, 'post hook: we will saved our data');
-  next();
 });
 
 // Query Middleware

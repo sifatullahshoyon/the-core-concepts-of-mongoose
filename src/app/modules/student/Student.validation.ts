@@ -54,44 +54,46 @@ const localGuardianValidationSchema = z.object({
   address: z.string().trim().nonempty("Local Guardian's Address is required."),
 });
 
-const studentValidationSchema = z.object({
-  id: z.string().nonempty('Student ID is required.'),
-  password: z.string().max(20),
-  name: userNameValidationSchema,
-  gender: z.enum(['male', 'female', 'other'], {
-    invalid_type_error: "Gender must be 'male', 'female', or 'other'.",
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string().max(20),
+    student: z.object({
+      name: userNameValidationSchema,
+      gender: z.enum(['male', 'female', 'other'], {
+        invalid_type_error: "Gender must be 'male', 'female', or 'other'.",
+      }),
+      dateOfBirth: z.string(),
+      email: z
+        .string()
+        .trim()
+        .email('Invalid email address.')
+        .nonempty('Email Address is required.'),
+      contactNo: z.string().trim().nonempty('Contact Number is required.'),
+      emergencyContactNo: z
+        .string()
+        .trim()
+        .nonempty('Emergency Contact Number is required.'),
+      BloodGroup: z
+        .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], {
+          invalid_type_error: 'Invalid Blood Group.',
+        })
+        .optional(),
+      presentAddress: z
+        .string()
+        .trim()
+        .nonempty('Present Address is required.'),
+      permanentAddress: z
+        .string()
+        .trim()
+        .nonempty('Permanent Address is required.'),
+      guardian: guardianValidationSchema,
+      localGuardian: localGuardianValidationSchema,
+      profileImg: z.string(),
+    }),
   }),
-  dateOfBirth: z.string().optional(),
-  email: z
-    .string()
-    .trim()
-    .email('Invalid email address.')
-    .nonempty('Email Address is required.'),
-  contactNo: z.string().trim().nonempty('Contact Number is required.'),
-  emergencyContactNo: z
-    .string()
-    .trim()
-    .nonempty('Emergency Contact Number is required.'),
-  BloodGroup: z
-    .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], {
-      invalid_type_error: 'Invalid Blood Group.',
-    })
-    .optional(),
-  presentAddress: z.string().trim().nonempty('Present Address is required.'),
-  permanentAddress: z
-    .string()
-    .trim()
-    .nonempty('Permanent Address is required.'),
-  guardian: guardianValidationSchema,
-  localGuardian: localGuardianValidationSchema,
-  profileImg: z.string().optional(),
-  isActive: z
-    .enum(['active', 'block'], {
-      invalid_type_error: "Status must be 'active' or 'block'.",
-    })
-    .default('active'),
-  isDeleted: z.boolean(),
 });
 
 // Export for use
-export default studentValidationSchema;
+export const studentValidations = {
+  createStudentValidationSchema,
+};

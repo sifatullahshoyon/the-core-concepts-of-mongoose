@@ -62,7 +62,7 @@ const createStudentValidationSchema = z.object({
       gender: z.enum(['male', 'female', 'other'], {
         invalid_type_error: "Gender must be 'male', 'female', or 'other'.",
       }),
-      dateOfBirth: z.string(),
+      dateOfBirth: z.date().optional(),
       email: z
         .string()
         .trim()

@@ -14,13 +14,19 @@ router.post(
   AcademicSemesterControllers.createAcademicSemester,
 );
 
-// get all students data
-// router.get('/', studentControllers.getAllStudents);
+router.get(
+  '/:semesterId',
+  AcademicSemesterControllers.getSingleAcademicSemester,
+);
 
-// get single student data
-// router.get('/:studentId', studentControllers.getSingleStudent);
+router.patch(
+  '/:semesterId',
+  validateRequest(
+    academicSemesterValidation.updateAcademicSemesterValidationSchema,
+  ),
+  AcademicSemesterControllers.updateAcademicSemester,
+);
 
-// get single student data
-// router.delete('/:studentId', studentControllers.deleteSingleStudent);
+router.get('/', AcademicSemesterControllers.getAllAcademicSemesters);
 
 export const AcademicSemesterRoutes = router;

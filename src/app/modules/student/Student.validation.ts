@@ -62,7 +62,7 @@ const createStudentValidationSchema = z.object({
       gender: z.enum(['male', 'female', 'other'], {
         invalid_type_error: "Gender must be 'male', 'female', or 'other'.",
       }),
-      dateOfBirth: z.date().optional(),
+      dateOfBirth: z.string().optional(),
       email: z
         .string()
         .trim()
@@ -88,6 +88,7 @@ const createStudentValidationSchema = z.object({
         .nonempty('Permanent Address is required.'),
       guardian: guardianValidationSchema,
       localGuardian: localGuardianValidationSchema,
+      admissionSemester: z.string(),
       profileImg: z.string(),
     }),
   }),

@@ -38,6 +38,7 @@ const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
       throw new AppError(400, 'Failed to create user');
     }
 
+    // set id, _id as user
     payLoad.id = newUser[0].id;
     payLoad.user = newUser[0]._id; // reference_id
 
@@ -57,6 +58,7 @@ const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
     console.error(err);
     await session.abortTransaction();
     await session.endSession();
+    throw new Error('Failed to create Student');
   }
 };
 

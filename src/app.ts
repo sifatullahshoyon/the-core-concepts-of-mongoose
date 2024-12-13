@@ -12,6 +12,13 @@ app.use(cors());
 // application routes
 app.use('/api/v1', router);
 
+const test = async (req: Request, res: Response) => {
+  // Promise.reject();
+  const a = 10;
+  res.send(a);
+};
+
+app.get('/', test);
 app.get('/', (req: Request, res: Response) => {
   res.send('Start PH University Management Service Server!');
 });
